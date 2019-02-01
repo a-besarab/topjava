@@ -33,13 +33,13 @@ public class UserMealsUtil {
         mealList.forEach(p -> sumCaloriesPerDay.merge(p.getDateTime().toLocalDate(), p.getCalories(), Integer::sum));
 
         List<UserMealWithExceed> filteredUserMealWithExceed = new ArrayList<>();
-        for (UserMeal userMeal : mealList) {
+        mealList.forEach(userMeal -> {
             if (isBetween(userMeal.getDateTime().toLocalTime(), startTime, endTime)) {
                 filteredUserMealWithExceed.add(new UserMealWithExceed(userMeal.getDateTime(),
                         userMeal.getDescription(), userMeal.getCalories(),
                         sumCaloriesPerDay.get(userMeal.getDateTime().toLocalDate()) > caloriesPerDay));
             }
-        }
+        });
         return filteredUserMealWithExceed;
     }
 
