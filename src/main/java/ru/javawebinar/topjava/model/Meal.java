@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.model;
 
+import ru.javawebinar.topjava.util.MealsUtil;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,10 +13,17 @@ public class Meal {
 
     private final int calories;
 
+    private final String id;
+
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
+        this.id = MealsUtil.getId();
+    }
+
+    public String getId() {
+        return id;
     }
 
     public LocalDateTime getDateTime() {

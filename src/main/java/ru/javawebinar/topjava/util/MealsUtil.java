@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
@@ -22,5 +23,9 @@ public class MealsUtil {
 
     public static MealTo createWithExcess(Meal meal, boolean excess) {
         return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+    }
+
+    public static String getId() {
+        return UUID.randomUUID().toString();
     }
 }
