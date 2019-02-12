@@ -1,29 +1,29 @@
 package ru.javawebinar.topjava.storage;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.TestDataMeals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class MapStorage implements Storage {
-    Map<String, Meal> allMeal = new HashMap<>();
+public class MapMealStorage implements Storage {
+    private static Map<String, Meal> allMeal = new ConcurrentHashMap<>();
 
-    @Override
-    public void create(Meal meal) {
-        allMeal.put(MealsUtil.getId(), meal);
+    static {
+        for (Meal meal : TestDataMeals.getTestList()) {
+            allMeal.put(meal.getId(), meal);
+        }
     }
 
     @Override
-    public void read(String id) {
-        allMeal.get(id);
+    public Meal get(String id) {
+        return allMeal.get(id);
     }
 
     @Override
     public void update(Meal meal, String id) {
-        delete(id);
         allMeal.put(id, meal);
     }
 
