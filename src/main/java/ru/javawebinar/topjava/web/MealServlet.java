@@ -3,7 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.storage.MapMealStorage;
-import ru.javawebinar.topjava.storage.Storage;
+import ru.javawebinar.topjava.storage.MealStorage;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.TimeUtil;
 
@@ -20,7 +20,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
-    private Storage storage;
+    private MealStorage storage;
 
     @Override
     public void init() throws ServletException {
@@ -43,11 +43,7 @@ public class MealServlet extends HttpServlet {
         String action = request.getParameter("action");
         String mealId = request.getParameter("mealId");
         if (action == null) {
-            List<Meal> list = new ArrayList<>();
-            for (Object meal : storage.getAll()) {
-                list.add((Meal) meal);
-            }
-            request.setAttribute("meal", MealsUtil.getFilteredWithExcess(list, LocalTime.MIN, LocalTime.MAX, 2000));
+            request.setAttribute("meal", MealsUtil.getFilteredWithExcess(storage.getAll(), LocalTime.MIN, LocalTime.MAX, 2000));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
             return;
         }

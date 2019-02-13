@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MapMealStorage implements Storage {
+public class MapMealStorage implements MealStorage {
     private static Map<String, Meal> allMeal;
 
     public MapMealStorage() {
@@ -36,7 +36,7 @@ public class MapMealStorage implements Storage {
         allMeal.remove(id);
     }
 
-    public List<Object> getAll() {
+    public List<Meal> getAll() {
         return new ArrayList<>(allMeal.values());
     }
 
@@ -48,5 +48,3 @@ public class MapMealStorage implements Storage {
         return UUID.randomUUID().toString();
     }
 }
-
-
