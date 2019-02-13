@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface Storage {
 
-    Meal get(String id);
+    Object get(String id);
 
-    void update(Meal meal, String id);
+    Object update(Meal meal, String id);
 
     void delete(String id);
 
-    List<Meal> getAll();
+    List<Object> getAll();
 }

@@ -13,12 +13,9 @@
 <form method="post" action="meals" enctype="application/x-www-form-urlencoded">
     <table>
         <tr>
-            <td>ID еды :</td>
-            <td><input type="text" readonly="readonly" name="id" value="<%=meal.getId()%>" required/></td>
-        </tr>
-        <tr>
             <td>Дата/Время :</td>
-            <td><input type="datetime-local" name="dateTime" value="<%=meal.getDateTime()%>" required/></td>
+            <td><input type="datetime-local" name="dateTime" value="<%=meal.getDateTime()%>" required/>
+                <input type="hidden" readonly="readonly" name="id" value="<%=meal.getId()%>" required/></td>
         </tr>
         <tr>
             <td>Описание :</td>

@@ -6,15 +6,15 @@ import ru.javawebinar.topjava.util.TestDataMeals;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MapMealStorage implements Storage {
-    private static Map<String, Meal> allMeal = new ConcurrentHashMap<>();
+    private static Map<String, Meal> allMeal;
 
-    static {
-        for (Meal meal : TestDataMeals.getTestList()) {
-            allMeal.put(meal.getId(), meal);
-        }
+    public MapMealStorage() {
+        allMeal = new ConcurrentHashMap<>();
+        TestDataMeals.getTestList().forEach(m -> update(m, m.getId()));
     }
 
     @Override
@@ -23,8 +23,12 @@ public class MapMealStorage implements Storage {
     }
 
     @Override
-    public void update(Meal meal, String id) {
+    public Meal update(Meal meal, String id) {
+        if (isExist(id)) {
+            delete(id);
+        }
         allMeal.put(id, meal);
+        return meal;
     }
 
     @Override
@@ -32,8 +36,16 @@ public class MapMealStorage implements Storage {
         allMeal.remove(id);
     }
 
-    public List<Meal> getAll() {
+    public List<Object> getAll() {
         return new ArrayList<>(allMeal.values());
+    }
+
+    private boolean isExist(String id) {
+        return get(id) != null;
+    }
+
+    public static String getId() {
+        return UUID.randomUUID().toString();
     }
 }
 

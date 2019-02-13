@@ -13,19 +13,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
-    private Storage storage = new MapMealStorage();
+    private Storage storage;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        storage = new MapMealStorage();
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         String id = req.getParameter("id");
-        storage.update(new Meal(TimeUtil.getLocalDateTime(req.getParameter("dateTime")),
-                req.getParameter("description"), Integer.valueOf(req.getParameter("calories")), id), id);
+        storage.update(new Meal(id, TimeUtil.getLocalDateTime(req.getParameter("dateTime")),
+                req.getParameter("description"), Integer.valueOf(req.getParameter("calories"))), id);
         resp.sendRedirect("meals");
     }
 
@@ -35,7 +43,11 @@ public class MealServlet extends HttpServlet {
         String action = request.getParameter("action");
         String mealId = request.getParameter("mealId");
         if (action == null) {
-            request.setAttribute("meal", MealsUtil.getFilteredWithExcess(storage.getAll(), LocalTime.MIN, LocalTime.MAX, 2000));
+            List<Meal> list = new ArrayList<>();
+            for (Object meal : storage.getAll()) {
+                list.add((Meal) meal);
+            }
+            request.setAttribute("meal", MealsUtil.getFilteredWithExcess(list, LocalTime.MIN, LocalTime.MAX, 2000));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
             return;
         }
@@ -45,13 +57,15 @@ public class MealServlet extends HttpServlet {
                 response.sendRedirect("meals");
                 break;
             case "add":
-                request.setAttribute("meal", Meal.EMPTY);
+                request.setAttribute("meal", MealsUtil.EMPTY);
                 request.getRequestDispatcher("/edit.jsp").forward(request, response);
                 break;
             case "edit":
                 request.setAttribute("meal", storage.get(mealId));
                 request.getRequestDispatcher("/edit.jsp").forward(request, response);
                 break;
+            default:
+                response.sendRedirect("meals");
         }
     }
 }

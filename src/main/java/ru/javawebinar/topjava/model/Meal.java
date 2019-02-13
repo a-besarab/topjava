@@ -1,30 +1,29 @@
 package ru.javawebinar.topjava.model;
 
+import ru.javawebinar.topjava.storage.MapMealStorage;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.UUID;
 
 public class Meal {
+    private final String id;
+
     private final LocalDateTime dateTime;
 
     private final String description;
 
     private final int calories;
 
-    private final String id;
-
-    public static final Meal EMPTY = new Meal(LocalDateTime.MIN, "", 0);
-
     public Meal(LocalDateTime dateTime, String description, int calories) {
-        this(dateTime, description, calories, null);
+        this(null, dateTime, description, calories);
     }
 
-    public Meal(LocalDateTime dateTime, String description, int calories, String id) {
+    public Meal(String id, LocalDateTime dateTime, String description, int calories) {
+        this.id = id == null ? MapMealStorage.getId() : id;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
-        this.id = id == null ? UUID.randomUUID().toString() : id;
     }
 
     public String getId() {
