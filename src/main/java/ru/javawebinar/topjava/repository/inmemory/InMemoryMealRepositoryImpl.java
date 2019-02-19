@@ -4,10 +4,15 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
@@ -15,49 +20,49 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(this::save);
+        MealsUtil.MEALS.forEach(MEAL -> save(MEAL, SecurityUtil.authUserId()));
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             repository.put(meal.getId(), meal);
             return meal;
         }
-        // treat case: update, but absent in storage
-        return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        return get(meal.getId(), userId) == null ? null : repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        if (get(id, userId).getUserId().equals(userId)) {
-            return repository.remove(id) != null;
-        } else {
-            return false;
-        }
+        return get(id, userId) != null && repository.remove(id) != null;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        if (repository.get(id).getUserId().equals(userId)) {
-            return repository.get(id);
+        Meal meal = repository.get(id);
+        if (meal != null && meal.getUserId() == userId) {
+            return meal;
         } else {
             return null;
         }
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
-        List<Meal> list = new ArrayList<>();
-        repository.forEach((k, v) -> {
-            if (v.getUserId().equals(userId)) {
-                list.add(v);
-            }
-        });
-        list.sort(Comparator.comparing(Meal::getDateTime));
-        Collections.reverse(list);
-        return list;
+    public List<Meal> getAll(int userId) {
+        return repository.values()
+                .stream()
+                .filter(v -> v.getUserId().equals(userId))
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Meal> getBetweenDays(LocalDate startDate, LocalDate endDate, int userId) {
+        return getAll(userId)
+                .stream()
+                .filter(v -> v.getDateTime().toLocalDate().compareTo(startDate) >= 0 && v.getDateTime().toLocalDate().compareTo(endDate) <= 0)
+                .collect(Collectors.toList());
     }
 }
 

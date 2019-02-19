@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 @Repository
 public class InMemoryUserRepositoryImpl implements UserRepository {
@@ -50,7 +49,9 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         ArrayList<User> list = new ArrayList<>(repository.values());
-        list.sort(Comparator.comparing((Function<User, String>) AbstractNamedEntity::getName).thenComparingInt(AbstractBaseEntity::getId));
+        list.sort(Comparator
+                .comparing(AbstractNamedEntity::getName)
+                .thenComparingInt(AbstractBaseEntity::getId));
         return list;
     }
 
