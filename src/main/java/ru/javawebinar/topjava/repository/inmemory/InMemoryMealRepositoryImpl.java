@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,31 +30,31 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public boolean delete(int id) {
-        return repository.remove(id) != null;
+    public boolean delete(int id, int userId) {
+        if (get(id, userId).getUserId().equals(userId)) {
+            return repository.remove(id) != null;
+        } else {
+            return false;
+        }
     }
 
     @Override
-    public Meal get(int id) {
-        return repository.get(id);
+    public Meal get(int id, int userId) {
+        if (repository.get(id).getUserId().equals(userId)) {
+            return repository.get(id);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public Collection<Meal> getAll() {
-        return repository.values();
-    }
-
-    @Override
-    public synchronized Collection<Meal> getAllByUserId() {
+    public Collection<Meal> getAll(int userId) {
         List<Meal> list = new ArrayList<>();
         repository.forEach((k, v) -> {
-            if (v.getUserId().equals(SecurityUtil.authUserId())) {
+            if (v.getUserId().equals(userId)) {
                 list.add(v);
             }
         });
-        if (list.size() == 0) {
-            return null;
-        }
         list.sort(Comparator.comparing(Meal::getDateTime));
         Collections.reverse(list);
         return list;

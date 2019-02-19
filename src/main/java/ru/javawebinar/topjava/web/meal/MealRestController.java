@@ -7,7 +7,6 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
@@ -22,59 +21,47 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 @Controller
 public class MealRestController {
 
+    private final MealService service;
+    private final Integer userId;
+    private final int caloriesPerDay;
+
     @Autowired
-    private MealService service;
+    public MealRestController(MealService service) {
+        this.service = service;
+        this.userId = SecurityUtil.authUserId();
+        this.caloriesPerDay = SecurityUtil.authUserCaloriesPerDay();
+    }
 
     List<MealTo> getWithExcessByUserId() {
-        return MealsUtil.getWithExcess(getAllByUserId(), SecurityUtil.authUserCaloriesPerDay());
+        return MealsUtil.getWithExcess(getAll(userId), caloriesPerDay);
     }
 
     List<MealTo> getWithExcessByUserIdFilteredByDateTime(User user, LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         LocalDateTime startDateTime = LocalDateTime.of(startDate == null ? LocalDate.MIN : startDate, startTime == null ? LocalTime.MIN : startTime);
         LocalDateTime endDateTime = LocalDateTime.of(endDate == null ? LocalDate.MAX : endDate, endTime == null ? LocalTime.MAX : endTime);
-        return MealsUtil.getFilteredWithExcess(getAllByUserId(), user.getCaloriesPerDay(), startDateTime, endDateTime);
+        return MealsUtil.getFilteredWithExcess(getAll(userId), user.getCaloriesPerDay(), startDateTime, endDateTime);
     }
 
     public Meal create(Meal meal) {
         checkNew(meal);
-        if (meal.getUserId().equals(SecurityUtil.authUserId())) {
-            return service.create(meal);
-        } else {
-            throw new NotFoundException("error");
-        }
+        meal.setUserId(userId);
+        return service.create(meal);
     }
 
     public void delete(int id) {
-        if (service.get(id).getUserId().equals(SecurityUtil.authUserId())) {
-            service.delete(id);
-        } else {
-            throw new NotFoundException("error");
-        }
+        service.delete(id, userId);
     }
 
     public Meal get(int id) {
-        if (service.get(id).getUserId().equals(SecurityUtil.authUserId())) {
-            return service.get(id);
-        } else {
-            throw new NotFoundException("error");
-        }
+        return service.get(id, userId);
     }
 
-    public Collection<Meal> getAllByUserId() {
-        return service.getAllByUserId();
-    }
-
-    public int update(Meal meal, int id) {
+    public void update(Meal meal, int id) {
         assureIdConsistent(meal, id);
-        if (meal.getUserId().equals(SecurityUtil.authUserId())) {
-            service.update(meal);
-            return SecurityUtil.authUserId();
-        } else {
-            throw new NotFoundException("error");
-        }
+        service.update(meal);
     }
 
-    public Collection getAll() {
-        return service.getAll();
+    public Collection<Meal> getAll(int userId) {
+        return service.getAll(userId);
     }
 }
