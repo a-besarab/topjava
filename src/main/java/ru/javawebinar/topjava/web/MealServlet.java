@@ -47,7 +47,11 @@ public class MealServlet extends HttpServlet {
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         //repository.save(meal, SecurityUtil.authUserId());
-        mealRestController.update(meal, Integer.valueOf(id));
+        if (meal.getId() == null) {
+            mealRestController.create(meal);
+        } else {
+            mealRestController.update(meal, Integer.valueOf(id));
+        }
         response.sendRedirect("meals");
     }
 
