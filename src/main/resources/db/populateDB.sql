@@ -1,6 +1,9 @@
-DELETE FROM user_roles;
-DELETE FROM users;
-DELETE FROM meals;
+DELETE
+FROM user_roles;
+DELETE
+FROM users;
+DELETE
+FROM meals;
 ALTER SEQUENCE global_seq RESTART WITH 100000;
 
 INSERT INTO users (name, email, password)
@@ -11,7 +14,10 @@ INSERT INTO user_roles (role, user_id)
 VALUES ('ROLE_USER', 100000),
        ('ROLE_ADMIN', 100001);
 
-INSERT INTO meals(id, user_id, date_time, description, calories)
-values (99999, 100000, '2015-05-30 10:00', 'Завтрак', 500),
-       (99998, 100000, '2015-05-30 13:00', 'Обед', 1000),
-       (99997, 100001, '2015-05-30 20:00', 'Ужин', 500);
+INSERT INTO meals(user_id, date_time, description, calories)
+values (100000, '2015-05-30 10:00', 'Завтрак1', 500),
+       (100000, '2015-05-30 13:00', 'Обед1', 1000),
+       (100000, '2015-05-30 20:00', 'Ужин1', 500),
+       (100000, '2015-05-29 10:00', 'Завтрак2', 500),
+       (100001, '2015-05-29 13:00', 'Обед2', 500),
+       (100001, '2015-05-29 20:00', 'Ужин2', 500);
