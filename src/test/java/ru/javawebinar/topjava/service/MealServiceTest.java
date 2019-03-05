@@ -4,7 +4,7 @@ import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,6 +19,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -35,33 +36,33 @@ public class MealServiceTest {
 
     private static final Logger log = getLogger(MealServiceTest.class);
     private static StringBuilder results = new StringBuilder();
-    private static Long time = 0L;
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
 
     @Rule
-    public TestWatcher watcher = new TestWatcher() {
-        @Override
-        public void starting(Description description) {
-            time = System.currentTimeMillis();
-        }
+    public Stopwatch stopwatch = new Stopwatch() {
 
         @Override
-        public void finished(Description description) {
-            time = System.currentTimeMillis() - time;
-            log.info("\n" + description.getMethodName() + "     " + time + " ms.");
-            results.append("\n")
-                    .append(description.getMethodName())
-                    .append("     ")
-                    .append(time)
-                    .append(" ms.");
+        protected void finished(long nanos, Description description) {
+            StringBuilder line = new StringBuilder(String.format("\n* Test %s, spent %d ms. ",
+                    description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos)));
+
+            while (line.length() <= 40) {
+                line.append("*");
+            }
+            log.info("\033[0;34m" +
+                    "\n\n***************** INFO *****************" + line +
+                    "\n****************************************\n\033[0m");
+            results.append(line);
         }
     };
 
     @AfterClass
     public static void printResult() {
-        System.out.println(results);
+        log.info("\033[0;34m"
+                + "\n\n************* SUMMARY INFO *************" + results.toString() +
+                "\n****************************************\n\033[0m");
     }
 
     static {
