@@ -17,13 +17,10 @@ import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 public abstract class AbstractMealController {
-    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractMealController.class);
 
     @Autowired
     private MealService service;
-
-    public AbstractMealController(MealService service) {
-    }
 
     public Meal get(int id) {
         int userId = SecurityUtil.authUserId();

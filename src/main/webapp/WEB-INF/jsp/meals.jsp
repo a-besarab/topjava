@@ -10,7 +10,7 @@
 
 <section>
     <h3>Meals</h3>
-    <form method="post" action="/topjava/meals/filter">
+    <form method="post" action="meals/filter">
         <dl>
             <dt><spring:message code="meal.fromdate"/></dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
@@ -30,7 +30,7 @@
         <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
     <hr/>
-    <a href="/topjava/meals/create"><spring:message code="meal.addmeal"/></a>
+    <a href="meals/create"><spring:message code="meal.addmeal"/></a>
     <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
