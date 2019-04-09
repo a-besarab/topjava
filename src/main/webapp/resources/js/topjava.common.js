@@ -38,6 +38,10 @@ function updateTable() {
     });
 }
 
+function updateFilteredTable(data) {
+    context.datatableApi.clear().rows.add(data).draw();
+}
+
 function save() {
     $.ajax({
         type: "POST",
