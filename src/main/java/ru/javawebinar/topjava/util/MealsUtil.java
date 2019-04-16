@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.util;
 import org.springframework.lang.Nullable;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.to.MealToUi;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -44,11 +45,11 @@ public class MealsUtil {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 
-    public static Meal createNewFromTo(MealTo newMeal) {
+    public static Meal createNewFromTo(MealToUi newMeal) {
         return new Meal(newMeal.getDateTime(), newMeal.getDescription(), newMeal.getCalories());
     }
 
-    public static Meal updateFromTo(MealTo mealTo) {
-        return new Meal(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories());
+    public static Meal updateFromTo(MealToUi mealToUi) {
+        return new Meal(mealToUi.getId(), mealToUi.getDateTime(), mealToUi.getDescription(), mealToUi.getCalories());
     }
 }
